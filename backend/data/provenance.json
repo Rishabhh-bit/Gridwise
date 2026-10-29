@@ -1,0 +1,20 @@
+{
+  "title": "Individual Household Electric Power Consumption",
+  "authors": "Georges Hebrail and Alice Berard",
+  "url": "https://archive.ics.uci.edu/dataset/235/individualhouseholdelectricpowerconsumption",
+  "doi": "10.24432/C58K54",
+  "license": "CC BY 4.0",
+  "download_url": "https://archive.ics.uci.edu/static/public/235/individual+household+electric+power+consumption.zip",
+  "download_sha256": "9f84b46ade8a2d8e1286ec4b2b6c2987a45a755c59f263be3b3b3d10dfbda3ff",
+  "processed_sha256": "43a92151e1c002b9c502e946f9bc9988ffd6ee5c9e57ff890e5e33249f50c084",
+  "retrieved_at": "2026-10-28T12:50:10.336700+00:00",
+  "location": "One household in Sceaux, France; NOT measured Pune city demand",
+  "unit": "kW",
+  "native_interval_minutes": 15,
+  "original_interval_minutes": 1,
+  "start": "2009-11-25 00:00:00",
+  "end": "2010-11-25 23:45:00",
+  "rows": 35136,
+  "partially_or_fully_missing_bins": 1189,
+  "processing": "15-minute mean of available measurements; empty bins forward-filled causally. Any target window with incomplete bins is excluded from evaluation. No city measurements are claimed."
+}

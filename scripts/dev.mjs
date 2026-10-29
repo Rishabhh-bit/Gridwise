@@ -1,0 +1,13 @@
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const venv=path.join(root,'.venv',process.platform==='win32'?'Scripts/python.exe':'bin/python');
+const python=existsSync(venv)?venv:(process.platform==='win32'?'python':'python3');
+const test=process.argv.includes('--test');
+const args=test?['scripts/test.py']:['scripts/dev.py',...process.argv.slice(2)];
+const child=spawn(python,args,{cwd:root,stdio:'inherit'});
+child.on('error',err=>{console.error('Could not launch Python. Run the setup script first.',err.message);process.exit(1)});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>child.kill(signal));
+child.on('exit',code=>process.exit(code??0));

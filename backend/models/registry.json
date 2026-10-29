@@ -1,0 +1,406 @@
+{
+  "created_at": "2026-10-28T18:23:48.621257+00:00",
+  "seed": 42,
+  "data_sha256": "43a92151e1c002b9c502e946f9bc9988ffd6ee5c9e57ff890e5e33249f50c084",
+  "native_resolution": "15min",
+  "context_steps": 96,
+  "output_steps": 96,
+  "training_windows": 2862,
+  "validation_windows": 45,
+  "split": {
+    "train_start": "2009-11-25 00:00:00",
+    "train_end": "2010-08-07 23:45:00",
+    "validation_start": "2010-08-08 00:00:00",
+    "validation_end": "2010-10-01 23:45:00",
+    "test_start": "2010-10-02 00:00:00",
+    "test_end": "2010-11-25 23:45:00"
+  },
+  "evaluation": "Non-overlapping 72-hour rolling origins in untouched test data; recursive day blocks. Targets with any incomplete 15-minute bin excluded. kW per original household. MAPE denominator floor: 0.05 kW.",
+  "models": [
+    {
+      "id": "baseline",
+      "name": "Seasonal baseline",
+      "status": "ready",
+      "test_origins": 17,
+      "metrics": {
+        "24": {
+          "15min": {
+            "mae": 0.8158176707140371,
+            "rmse": 1.1634821565244706,
+            "mape": 100.08693177607022,
+            "points": 1632
+          },
+          "hourly": {
+            "mae": 0.743099211048627,
+            "rmse": 1.0243761600012922,
+            "mape": 86.79717559401342,
+            "points": 408
+          },
+          "daily": {
+            "mae": 0.3843587105637234,
+            "rmse": 0.48620059537976673,
+            "mape": 35.428409684695524,
+            "points": 17
+          }
+        },
+        "48": {
+          "15min": {
+            "mae": 0.786124144352096,
+            "rmse": 1.1516913581155137,
+            "mape": 92.30744159753318,
+            "points": 3264
+          },
+          "hourly": {
+            "mae": 0.7031480829761017,
+            "rmse": 0.9959997790553393,
+            "mape": 77.87127277451235,
+            "points": 816
+          },
+          "daily": {
+            "mae": 0.35665830350754896,
+            "rmse": 0.45464022958560196,
+            "mape": 31.521668186114578,
+            "points": 34
+          }
+        },
+        "72": {
+          "15min": {
+            "mae": 0.7841998549129546,
+            "rmse": 1.138238413175714,
+            "mape": 95.73072369145339,
+            "points": 4896
+          },
+          "hourly": {
+            "mae": 0.6973928818692228,
+            "rmse": 0.9857954470720276,
+            "mape": 81.13226209175444,
+            "points": 1224
+          },
+          "daily": {
+            "mae": 0.3455032899799252,
+            "rmse": 0.44870229449494786,
+            "mape": 31.447501441912422,
+            "points": 51
+          }
+        }
+      },
+      "parameters": 0,
+      "description": "Repeat measurements from the same 15-minute slot one week earlier."
+    },
+    {
+      "id": "lstm",
+      "name": "LSTM",
+      "status": "trained",
+      "test_origins": 17,
+      "metrics": {
+        "24": {
+          "15min": {
+            "mae": 0.5862426184866504,
+            "rmse": 0.8440842179820441,
+            "mape": 72.47710556779327,
+            "points": 1632
+          },
+          "hourly": {
+            "mae": 0.5190256564129218,
+            "rmse": 0.7239468066848682,
+            "mape": 58.17455694446807,
+            "points": 408
+          },
+          "daily": {
+            "mae": 0.18922089087758578,
+            "rmse": 0.2779858792940611,
+            "mape": 14.811287371114968,
+            "points": 17
+          }
+        },
+        "48": {
+          "15min": {
+            "mae": 0.5947401263093686,
+            "rmse": 0.8584430808126599,
+            "mape": 70.84144544079479,
+            "points": 3264
+          },
+          "hourly": {
+            "mae": 0.5261639079772958,
+            "rmse": 0.7470785704760227,
+            "mape": 56.96816533086365,
+            "points": 816
+          },
+          "daily": {
+            "mae": 0.21877986013743222,
+            "rmse": 0.3267669367610899,
+            "mape": 17.059224422087752,
+            "points": 34
+          }
+        },
+        "72": {
+          "15min": {
+            "mae": 0.6048538790242686,
+            "rmse": 0.8606645956051181,
+            "mape": 73.93136087354398,
+            "points": 4896
+          },
+          "hourly": {
+            "mae": 0.5404137038424903,
+            "rmse": 0.7551789164770473,
+            "mape": 60.736876046283996,
+            "points": 1224
+          },
+          "daily": {
+            "mae": 0.2426749457136478,
+            "rmse": 0.34399509059758687,
+            "mape": 21.042057526724278,
+            "points": 51
+          }
+        }
+      },
+      "epochs_run": 15,
+      "best_epoch": 11,
+      "parameters": 6817,
+      "learning_curve": [
+        {
+          "epoch": 1,
+          "train_mse_scaled": 0.9784971967100015,
+          "validation_mse_scaled": 0.6422563195228577
+        },
+        {
+          "epoch": 2,
+          "train_mse_scaled": 0.9120802520705968,
+          "validation_mse_scaled": 0.6540972590446472
+        },
+        {
+          "epoch": 3,
+          "train_mse_scaled": 0.8754884651038798,
+          "validation_mse_scaled": 0.651671290397644
+        },
+        {
+          "epoch": 4,
+          "train_mse_scaled": 0.8652429505297556,
+          "validation_mse_scaled": 0.6235325932502747
+        },
+        {
+          "epoch": 5,
+          "train_mse_scaled": 0.8548510276629823,
+          "validation_mse_scaled": 0.6513208746910095
+        },
+        {
+          "epoch": 6,
+          "train_mse_scaled": 0.8375142281243719,
+          "validation_mse_scaled": 0.6201248168945312
+        },
+        {
+          "epoch": 7,
+          "train_mse_scaled": 0.8152525710276505,
+          "validation_mse_scaled": 0.6052820682525635
+        },
+        {
+          "epoch": 8,
+          "train_mse_scaled": 0.7934310344613407,
+          "validation_mse_scaled": 0.6042235493659973
+        },
+        {
+          "epoch": 9,
+          "train_mse_scaled": 0.7684375799093773,
+          "validation_mse_scaled": 0.5732752084732056
+        },
+        {
+          "epoch": 10,
+          "train_mse_scaled": 0.7444635724621499,
+          "validation_mse_scaled": 0.5693440437316895
+        },
+        {
+          "epoch": 11,
+          "train_mse_scaled": 0.7281804628758727,
+          "validation_mse_scaled": 0.556519091129303
+        },
+        {
+          "epoch": 12,
+          "train_mse_scaled": 0.7201960686617678,
+          "validation_mse_scaled": 0.5637117028236389
+        },
+        {
+          "epoch": 13,
+          "train_mse_scaled": 0.7133711564799108,
+          "validation_mse_scaled": 0.5804137587547302
+        },
+        {
+          "epoch": 14,
+          "train_mse_scaled": 0.7109340947045887,
+          "validation_mse_scaled": 0.5883296728134155
+        },
+        {
+          "epoch": 15,
+          "train_mse_scaled": 0.7098483415769581,
+          "validation_mse_scaled": 0.5695272088050842
+        }
+      ]
+    },
+    {
+      "id": "transformer",
+      "name": "Lightweight Transformer",
+      "status": "trained",
+      "test_origins": 17,
+      "metrics": {
+        "24": {
+          "15min": {
+            "mae": 0.6060393948710578,
+            "rmse": 0.8420441334920226,
+            "mape": 83.22879963856663,
+            "points": 1632
+          },
+          "hourly": {
+            "mae": 0.5339762645536194,
+            "rmse": 0.7218460163655018,
+            "mape": 67.34911378435895,
+            "points": 408
+          },
+          "daily": {
+            "mae": 0.2201263176679027,
+            "rmse": 0.28836203207908045,
+            "mape": 19.571751296086084,
+            "points": 17
+          }
+        },
+        "48": {
+          "15min": {
+            "mae": 0.6105754727808138,
+            "rmse": 0.8616433865551344,
+            "mape": 77.25868844330911,
+            "points": 3264
+          },
+          "hourly": {
+            "mae": 0.537007551548966,
+            "rmse": 0.7509092899724766,
+            "mape": 62.36839681788203,
+            "points": 816
+          },
+          "daily": {
+            "mae": 0.2557152357938535,
+            "rmse": 0.34126302311228707,
+            "mape": 21.450662296287735,
+            "points": 34
+          }
+        },
+        "72": {
+          "15min": {
+            "mae": 0.615884037368803,
+            "rmse": 0.8623523866826679,
+            "mape": 77.42441714980058,
+            "points": 4896
+          },
+          "hourly": {
+            "mae": 0.5477356884044176,
+            "rmse": 0.7571412277957444,
+            "mape": 63.549832141555484,
+            "points": 1224
+          },
+          "daily": {
+            "mae": 0.2712198179458676,
+            "rmse": 0.3542320664449722,
+            "mape": 23.90348627589426,
+            "points": 51
+          }
+        }
+      },
+      "epochs_run": 16,
+      "best_epoch": 13,
+      "parameters": 22177,
+      "learning_curve": [
+        {
+          "epoch": 1,
+          "train_mse_scaled": 0.9104012173426727,
+          "validation_mse_scaled": 0.6372645497322083
+        },
+        {
+          "epoch": 2,
+          "train_mse_scaled": 0.8566591269398469,
+          "validation_mse_scaled": 0.6053654551506042
+        },
+        {
+          "epoch": 3,
+          "train_mse_scaled": 0.8418565901487045,
+          "validation_mse_scaled": 0.5886576771736145
+        },
+        {
+          "epoch": 4,
+          "train_mse_scaled": 0.8288386013023008,
+          "validation_mse_scaled": 0.5871307253837585
+        },
+        {
+          "epoch": 5,
+          "train_mse_scaled": 0.8141009840492099,
+          "validation_mse_scaled": 0.5797140002250671
+        },
+        {
+          "epoch": 6,
+          "train_mse_scaled": 0.8002400023798939,
+          "validation_mse_scaled": 0.573336124420166
+        },
+        {
+          "epoch": 7,
+          "train_mse_scaled": 0.779982969612612,
+          "validation_mse_scaled": 0.5669799447059631
+        },
+        {
+          "epoch": 8,
+          "train_mse_scaled": 0.7566944194539788,
+          "validation_mse_scaled": 0.542554497718811
+        },
+        {
+          "epoch": 9,
+          "train_mse_scaled": 0.7303387368166888,
+          "validation_mse_scaled": 0.5507428646087646
+        },
+        {
+          "epoch": 10,
+          "train_mse_scaled": 0.7091966103124585,
+          "validation_mse_scaled": 0.5512257218360901
+        },
+        {
+          "epoch": 11,
+          "train_mse_scaled": 0.6891142142810328,
+          "validation_mse_scaled": 0.5302355885505676
+        },
+        {
+          "epoch": 12,
+          "train_mse_scaled": 0.6736646451623518,
+          "validation_mse_scaled": 0.5687496066093445
+        },
+        {
+          "epoch": 13,
+          "train_mse_scaled": 0.6640373986971954,
+          "validation_mse_scaled": 0.5286756753921509
+        },
+        {
+          "epoch": 14,
+          "train_mse_scaled": 0.6537756374630371,
+          "validation_mse_scaled": 0.5303232669830322
+        },
+        {
+          "epoch": 15,
+          "train_mse_scaled": 0.6456951933836786,
+          "validation_mse_scaled": 0.5336765646934509
+        },
+        {
+          "epoch": 16,
+          "train_mse_scaled": 0.6389473293895575,
+          "validation_mse_scaled": 0.5530943274497986
+        }
+      ]
+    }
+  ],
+  "training_seconds": 129.73,
+  "anomaly": {
+    "method": "Isolation Forest",
+    "training_rows": 24480,
+    "contamination": 0.025,
+    "features": [
+      "load/prior-day mean",
+      "change/prior-day mean",
+      "log1p household kW",
+      "hour sine",
+      "hour cosine"
+    ],
+    "evaluation": "Unsupervised; no labelled anomaly accuracy claimed."
+  }
+}

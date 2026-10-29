@@ -1,0 +1,254 @@
+{
+  "name": "Pune Microgrid Schematic Layout",
+  "version": "2.0.0",
+  "bounds": {
+    "minX": -337.5,
+    "maxX": 337.5,
+    "minZ": -217.5,
+    "maxZ": 217.5,
+    "width_m": 675,
+    "depth_m": 435
+  },
+  "roadLoop": [
+    [-303.75, -58.5],
+    [-15.0, -171.0],
+    [302.25, -56.25],
+    [9.0, 91.5]
+  ],
+  "roadSpurs": [
+    [[-300.0, 87.75], [-7.5, -24.75], [300.0, 87.75]]
+  ],
+  "nodes": [
+    {
+      "id": "solar",
+      "name": "Solar park",
+      "type": "source",
+      "svgX": 150,
+      "svgY": 105,
+      "position": [-225.0, 0, -138.75],
+      "footprint": [
+        [-275.0, -173.75],
+        [-175.0, -173.75],
+        [-175.0, -103.75],
+        [-275.0, -103.75]
+      ],
+      "orientation": 0,
+      "parts": {
+        "tableSpacing": 9.0,
+        "maxCols": 6,
+        "inverterPad": [-225.0, -115.0]
+      }
+    },
+    {
+      "id": "wind",
+      "name": "Wind farm",
+      "type": "source",
+      "svgX": 440,
+      "svgY": 80,
+      "position": [-7.5, 0, -157.5],
+      "footprint": [
+        [-67.5, -187.5],
+        [52.5, -187.5],
+        [52.5, -127.5],
+        [-67.5, -127.5]
+      ],
+      "orientation": 0,
+      "parts": {
+        "hubHeight_m": 80,
+        "rotorDiam_m": 100,
+        "spacing_m": 45
+      }
+    },
+    {
+      "id": "utility",
+      "name": "Utility grid",
+      "type": "source",
+      "svgX": 735,
+      "svgY": 105,
+      "position": [213.75, 0, -138.75],
+      "footprint": [
+        [183.75, -163.75],
+        [243.75, -163.75],
+        [243.75, -113.75],
+        [183.75, -113.75]
+      ],
+      "orientation": -15,
+      "parts": {
+        "pylonHeight_m": 32,
+        "kioskFootprint": [6, 4]
+      }
+    },
+    {
+      "id": "hub",
+      "name": "Central substation",
+      "type": "hub",
+      "svgX": 440,
+      "svgY": 260,
+      "position": [-7.5, 0, -22.5],
+      "footprint": [
+        [-52.5, -57.5],
+        [37.5, -57.5],
+        [37.5, 12.5],
+        [-52.5, 12.5]
+      ],
+      "orientation": 0,
+      "parts": {
+        "transformers": 2,
+        "controlHouse": [18, 10],
+        "busbarLength": 40
+      }
+    },
+    {
+      "id": "residential",
+      "name": "Residential",
+      "type": "load",
+      "svgX": 125,
+      "svgY": 295,
+      "position": [-243.75, 0, 3.75],
+      "footprint": [
+        [-283.75, -31.25],
+        [-203.75, -31.25],
+        [-203.75, 38.75],
+        [-283.75, 38.75]
+      ],
+      "orientation": 5,
+      "parts": {
+        "buildings": 3,
+        "nonRectangular": true,
+        "meterKiosk": true
+      }
+    },
+    {
+      "id": "hospital",
+      "name": "Hospital",
+      "type": "load",
+      "critical": true,
+      "svgX": 765,
+      "svgY": 290,
+      "position": [236.25, 0, 0.0],
+      "footprint": [
+        [191.25, -40.0],
+        [281.25, -40.0],
+        [281.25, 40.0],
+        [191.25, 40.0]
+      ],
+      "orientation": -5,
+      "parts": {
+        "wings": 2,
+        "canopy": true,
+        "crossSymbol": true
+      }
+    },
+    {
+      "id": "industrial",
+      "name": "Industry",
+      "type": "load",
+      "svgX": 155,
+      "svgY": 485,
+      "position": [-221.25, 0, 146.25],
+      "footprint": [
+        [-266.25, 106.25],
+        [-176.25, 106.25],
+        [-176.25, 186.25],
+        [-266.25, 186.25]
+      ],
+      "orientation": 0,
+      "parts": {
+        "sawtoothRoof": true,
+        "chimney": true,
+        "loadingDock": true,
+        "transformerYard": true
+      }
+    },
+    {
+      "id": "commercial",
+      "name": "Commercial",
+      "type": "load",
+      "svgX": 440,
+      "svgY": 485,
+      "position": [-7.5, 0, 146.25],
+      "footprint": [
+        [-47.5, 111.25],
+        [32.5, 111.25],
+        [32.5, 181.25],
+        [-47.5, 181.25]
+      ],
+      "orientation": 0,
+      "parts": {
+        "buildings": 2,
+        "podiumTower": true
+      }
+    },
+    {
+      "id": "ev",
+      "name": "EV charging",
+      "type": "load",
+      "svgX": 735,
+      "svgY": 485,
+      "position": [213.75, 0, 146.25],
+      "footprint": [
+        [183.75, 121.25],
+        [243.75, 121.25],
+        [243.75, 171.25],
+        [183.75, 171.25]
+      ],
+      "orientation": 0,
+      "parts": {
+        "bays": 8,
+        "canopy": true,
+        "transformer": true
+      }
+    },
+    {
+      "id": "water",
+      "name": "Water pumps",
+      "type": "load",
+      "svgX": 290,
+      "svgY": 350,
+      "position": [-120.0, 0, 45.0],
+      "footprint": [
+        [-150.0, 20.0],
+        [-90.0, 20.0],
+        [-90.0, 70.0],
+        [-150.0, 70.0]
+      ],
+      "orientation": 10,
+      "parts": {
+        "tank": true,
+        "pumpHouse": true,
+        "pipework": true
+      }
+    },
+    {
+      "id": "hvac",
+      "name": "HVAC",
+      "type": "load",
+      "svgX": 600,
+      "svgY": 350,
+      "position": [112.5, 0, 45.0],
+      "footprint": [
+        [82.5, 20.0],
+        [142.5, 20.0],
+        [142.5, 70.0],
+        [82.5, 70.0]
+      ],
+      "orientation": -10,
+      "parts": {
+        "chillerPlant": true,
+        "coolingTowers": 2
+      }
+    }
+  ],
+  "edges": [
+    { "id": "solar-hub", "from": "solar", "to": "hub" },
+    { "id": "wind-hub", "from": "wind", "to": "hub" },
+    { "id": "utility-hub", "from": "utility", "to": "hub" },
+    { "id": "hub-residential", "from": "hub", "to": "residential" },
+    { "id": "hub-hospital", "from": "hub", "to": "hospital" },
+    { "id": "hub-industrial", "from": "hub", "to": "industrial" },
+    { "id": "hub-commercial", "from": "hub", "to": "commercial" },
+    { "id": "hub-ev", "from": "hub", "to": "ev" },
+    { "id": "hub-water", "from": "hub", "to": "water" },
+    { "id": "hub-hvac", "from": "hub", "to": "hvac" }
+  ]
+}

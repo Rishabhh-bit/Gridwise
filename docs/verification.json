@@ -1,0 +1,213 @@
+{
+  "verified_at": "2026-10-28T18:35:37.114210+00:00",
+  "python": "3.12.3",
+  "test_summary": "11 passed, 1 warning in 8.28s",
+  "models_created_at": "2026-10-28T18:23:48.621257+00:00",
+  "scenarios": [
+    {
+      "scenario": "Balanced city",
+      "statistics": {
+        "before": {
+          "energy_mwh": 153.96706555900965,
+          "peak_mw": 8.962065671832987,
+          "peak_at": "2026-10-28T18:45:00+05:30",
+          "grid_peak_mw": 7.0,
+          "import_mwh": 112.48847144905665,
+          "cost_inr": 900062.2640826168,
+          "renewable_used_mwh": 37.386173917327895,
+          "renewable_available_mwh": 37.386173917327895,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 24.281929243497345,
+          "unserved_mwh": 4.092420192625129,
+          "shortage_hours": 3.0,
+          "curtailed_mwh": 0.0
+        },
+        "after": {
+          "energy_mwh": 153.96706555900965,
+          "peak_mw": 7.651675450418908,
+          "peak_at": "2026-10-28T12:30:00+05:30",
+          "grid_peak_mw": 7.0,
+          "import_mwh": 116.58089164168177,
+          "cost_inr": 895072.6441230692,
+          "renewable_used_mwh": 37.386173917327895,
+          "renewable_available_mwh": 37.386173917327895,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 24.281929243497345,
+          "unserved_mwh": 2.220446049250313e-16,
+          "shortage_hours": 0.0,
+          "curtailed_mwh": 0.0
+        },
+        "cost_savings_inr": 4989.619959547534,
+        "peak_reduction_pct": 14.6215199642257,
+        "shifted_mwh": 13.24148118901098
+      },
+      "solver": "optimal",
+      "energy_error_mwh": 2.842170943040401e-14,
+      "alerts": 0
+    },
+    {
+      "scenario": "Cloud front",
+      "statistics": {
+        "before": {
+          "energy_mwh": 153.96706555900965,
+          "peak_mw": 8.962065671832987,
+          "peak_at": "2026-10-28T18:45:00+05:30",
+          "grid_peak_mw": 5.0,
+          "import_mwh": 114.75574232527785,
+          "cost_inr": 883778.7116263892,
+          "renewable_used_mwh": 11.358110797111959,
+          "renewable_available_mwh": 11.358110797111959,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 7.376974261264226,
+          "unserved_mwh": 27.853212436619863,
+          "shortage_hours": 15.0,
+          "curtailed_mwh": 0.0
+        },
+        "after": {
+          "energy_mwh": 153.96706555900965,
+          "peak_mw": 7.166106301633084,
+          "peak_at": "2026-10-28T10:00:00+05:30",
+          "grid_peak_mw": 5.0,
+          "import_mwh": 117.10954334974303,
+          "cost_inr": 895547.7167487151,
+          "renewable_used_mwh": 11.358110797111959,
+          "renewable_available_mwh": 11.358110797111959,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 7.376974261264226,
+          "unserved_mwh": 25.49941141215467,
+          "shortage_hours": 17.5,
+          "curtailed_mwh": 0.0
+        },
+        "cost_savings_inr": -11769.005122325965,
+        "peak_reduction_pct": 20.039569402447594,
+        "shifted_mwh": 14.173756642600686
+      },
+      "solver": "optimal",
+      "energy_error_mwh": 2.842170943040401e-14,
+      "alerts": 0
+    },
+    {
+      "scenario": "Heatwave",
+      "statistics": {
+        "before": {
+          "energy_mwh": 203.31299861542874,
+          "peak_mw": 11.7192487564579,
+          "peak_at": "2026-10-28T18:45:00+05:30",
+          "grid_peak_mw": 5.5,
+          "import_mwh": 129.55081821387557,
+          "cost_inr": 981406.5457110046,
+          "renewable_used_mwh": 35.8394123173279,
+          "renewable_available_mwh": 35.8394123173279,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 17.627703374302683,
+          "unserved_mwh": 37.92276808422527,
+          "shortage_hours": 21.0,
+          "curtailed_mwh": 0.0
+        },
+        "after": {
+          "energy_mwh": 203.31299861542874,
+          "peak_mw": 11.036536827593215,
+          "peak_at": "2026-10-28T12:00:00+05:30",
+          "grid_peak_mw": 5.5,
+          "import_mwh": 132.0,
+          "cost_inr": 1001000.0,
+          "renewable_used_mwh": 35.8394123173279,
+          "renewable_available_mwh": 35.8394123173279,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 17.627703374302683,
+          "unserved_mwh": 35.473586298100855,
+          "shortage_hours": 18.0,
+          "curtailed_mwh": 0.0
+        },
+        "cost_savings_inr": -19593.45428899536,
+        "peak_reduction_pct": 5.825560520579233,
+        "shifted_mwh": 6.665593378087181
+      },
+      "solver": "optimal",
+      "energy_error_mwh": 2.842170943040401e-14,
+      "alerts": 0
+    },
+    {
+      "scenario": "Industrial surge",
+      "statistics": {
+        "before": {
+          "energy_mwh": 160.26706555900967,
+          "peak_mw": 13.031529381262986,
+          "peak_at": "2026-10-28T18:15:00+05:30",
+          "grid_peak_mw": 5.0,
+          "import_mwh": 101.22643791994453,
+          "cost_inr": 776035.9132866352,
+          "renewable_used_mwh": 37.386173917327895,
+          "renewable_available_mwh": 37.386173917327895,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 23.32742150542618,
+          "unserved_mwh": 21.654453721737244,
+          "shortage_hours": 8.0,
+          "curtailed_mwh": 0.0
+        },
+        "after": {
+          "energy_mwh": 160.26706555900967,
+          "peak_mw": 9.360724484426553,
+          "peak_at": "2026-10-28T13:00:00+05:30",
+          "grid_peak_mw": 5.0,
+          "import_mwh": 108.46731008920759,
+          "cost_inr": 826409.8506644316,
+          "renewable_used_mwh": 37.386173917327895,
+          "renewable_available_mwh": 37.386173917327895,
+          "renewable_utilization_pct": 100.0,
+          "renewable_share_pct": 23.32742150542618,
+          "unserved_mwh": 14.413581552474195,
+          "shortage_hours": 4.75,
+          "curtailed_mwh": 0.0
+        },
+        "cost_savings_inr": -50373.93737779639,
+        "peak_reduction_pct": 28.168642293930564,
+        "shifted_mwh": 12.786609488718847
+      },
+      "solver": "optimal",
+      "energy_error_mwh": 2.842170943040401e-14,
+      "alerts": 1
+    },
+    {
+      "scenario": "Renewable surplus",
+      "statistics": {
+        "before": {
+          "energy_mwh": 127.25365244720776,
+          "peak_mw": 7.339652537466391,
+          "peak_at": "2026-10-28T18:45:00+05:30",
+          "grid_peak_mw": 7.0,
+          "import_mwh": 72.2291597178708,
+          "cost_inr": 584567.0714830294,
+          "renewable_used_mwh": 54.83712667749592,
+          "renewable_available_mwh": 74.77234783465579,
+          "renewable_utilization_pct": 73.33877866020383,
+          "renewable_share_pct": 43.09277228820254,
+          "unserved_mwh": 0.18736605184102473,
+          "shortage_hours": 1.0,
+          "curtailed_mwh": 19.935221157159873
+        },
+        "after": {
+          "energy_mwh": 127.25365244720774,
+          "peak_mw": 7.339652637466392,
+          "peak_at": "2026-10-28T10:45:00+05:30",
+          "grid_peak_mw": 7.0,
+          "import_mwh": 66.7579157671361,
+          "cost_inr": 506952.057539625,
+          "renewable_used_mwh": 60.49573668007164,
+          "renewable_available_mwh": 74.77234783465579,
+          "renewable_utilization_pct": 80.90656296341791,
+          "renewable_share_pct": 47.539489450150604,
+          "unserved_mwh": 0.0,
+          "shortage_hours": 0.0,
+          "curtailed_mwh": 14.27661115458415
+        },
+        "cost_savings_inr": 77615.01394340442,
+        "peak_reduction_pct": -1.362462332626024e-06,
+        "shifted_mwh": 11.087546877038214
+      },
+      "solver": "optimal",
+      "energy_error_mwh": -1.4210854715202004e-14,
+      "alerts": 0
+    }
+  ]
+}

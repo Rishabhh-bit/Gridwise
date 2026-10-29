@@ -1,0 +1,14 @@
+.venv/
+.venv-runtime/
+__pycache__/
+.pytest_cache/
+node_modules/
+frontend/dist/
+backend/data/raw/
+backend/data/*.sqlite*
+backend/data/training.log
+backend/data/server.log
+backend/models/.training/
+backend/models/.bundle.lock
+.env
+*.zip
