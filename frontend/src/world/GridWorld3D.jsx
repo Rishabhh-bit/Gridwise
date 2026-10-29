@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CityScene } from './levels/City.jsx';
 import { SiteScene } from './levels/Site.jsx';
 import { EquipmentScene } from './levels/Equipment.jsx';
 import { createGridFloorMaterial } from './materials/gridFloor.js';
 import { buildBuffers, flowsAt } from './selectors.js';
-import { damp, getCameraDistanceForDepth, getFovForDepth, computeCameraPosition } from './zoom.js';
+import { damp } from './zoom.js';
 import { TitleBlock } from './hud/TitleBlock.jsx';
 import { WorldBreadcrumb } from './hud/Breadcrumb.jsx';
 import { IntegrityBadge } from './hud/IntegrityBadge.jsx';
@@ -15,7 +16,8 @@ import { Lenses } from './hud/Lenses.jsx';
 import { TourOverlay } from './hud/Tour.jsx';
 import { buildShortageTour } from './tour/followShortage.js';
 import cityLayout from './layout/city.json';
-import { Sparkles, Maximize2, Minimize2 } from 'lucide-react';
+import { Sparkles, Compass } from 'lucide-react';
+import { fmt } from '../api.js';
 import './world.css';
 
 const NODE_POS_MAP = {};
@@ -24,43 +26,132 @@ for (const n of cityLayout.nodes) {
 }
 
 /**
- * Camera Rig managing continuous depth, exponential distance, and critically damped gliding.
+ * Enhanced Camera & OrbitControls Manager:
+ * - Free 3D orbit (rotate) with left-click drag
+ * - Free 3D pan (move) with right-click / two-finger drag
+ * - Smooth scroll-wheel zoom to inspect every building
+ * - Smooth damped fly-in when clicking a site
  */
-function CameraRig({ depth, targetNodeId, isEquipment, setCamDist }) {
-  const { camera } = useThree();
-  const currentDepth = useRef(depth);
-  const currentTarget = useRef(new THREE.Vector3(0, 0, 0));
+function CameraAndControls({
+  selected,
+  depth,
+  setDepth,
+  equipmentOpen,
+  setEquipmentOpen,
+  setCamDist,
+  onLabelsProject,
+}) {
+  const { camera, gl } = useThree();
+  const controlsRef = useRef();
+  const isAnimating = useRef(false);
+  const targetGoal = useRef(new THREE.Vector3(0, 0, 0));
+  const posGoal = useRef(new THREE.Vector3(0, 750, 750));
 
-  useFrame((state, delta) => {
-    const dt = Math.min(delta, 0.1);
-    currentDepth.current = damp(currentDepth.current, depth, 7.0, dt);
+  useEffect(() => {
+    const controls = new OrbitControls(camera, gl.domElement);
+    controlsRef.current = controls;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.screenSpacePanning = true;
+    controls.maxPolarAngle = Math.PI / 2.05; // Prevent camera clipping below ground
+    controls.minDistance = 10.0;
+    controls.maxDistance = 1400.0;
 
-    const goalTarget = targetNodeId && NODE_POS_MAP[targetNodeId]
-      ? NODE_POS_MAP[targetNodeId]
+    // When user starts dragging or scrolling manually, yield animation
+    controls.addEventListener('start', () => {
+      isAnimating.current = false;
+    });
+
+    return () => controls.dispose();
+  }, [camera, gl]);
+
+  // When selection or equipment level changes, smoothly fly in
+  useEffect(() => {
+    const goalCenter = selected && NODE_POS_MAP[selected]
+      ? NODE_POS_MAP[selected].clone()
       : new THREE.Vector3(0, 0, 0);
 
-    currentTarget.current.x = damp(currentTarget.current.x, goalTarget.x, 8.0, dt);
-    currentTarget.current.y = damp(currentTarget.current.y, goalTarget.y, 8.0, dt);
-    currentTarget.current.z = damp(currentTarget.current.z, goalTarget.z, 8.0, dt);
+    targetGoal.current.copy(goalCenter);
 
-    const dist = getCameraDistanceForDepth(currentDepth.current);
+    const dist = equipmentOpen ? 25 : selected ? 140 : 850;
+    const elev = equipmentOpen ? 0.44 : selected ? 0.55 : 0.61;
+    const az = Math.PI / 4;
+
+    const horiz = dist * Math.cos(elev);
+    posGoal.current.set(
+      goalCenter.x + horiz * Math.sin(az),
+      goalCenter.y + dist * Math.sin(elev),
+      goalCenter.z + horiz * Math.cos(az)
+    );
+
+    isAnimating.current = true;
+  }, [selected, equipmentOpen]);
+
+  useFrame((state, delta) => {
+    if (!controlsRef.current) return;
+    const controls = controlsRef.current;
+    const dt = Math.min(delta, 0.1);
+
+    if (isAnimating.current) {
+      controls.target.x = damp(controls.target.x, targetGoal.current.x, 6.0, dt);
+      controls.target.y = damp(controls.target.y, targetGoal.current.y, 6.0, dt);
+      controls.target.z = damp(controls.target.z, targetGoal.current.z, 6.0, dt);
+
+      camera.position.x = damp(camera.position.x, posGoal.current.x, 6.0, dt);
+      camera.position.y = damp(camera.position.y, posGoal.current.y, 6.0, dt);
+      camera.position.z = damp(camera.position.z, posGoal.current.z, 6.0, dt);
+
+      if (
+        controls.target.distanceTo(targetGoal.current) < 0.8 &&
+        camera.position.distanceTo(posGoal.current) < 1.5
+      ) {
+        isAnimating.current = false;
+      }
+    }
+
+    controls.update();
+
+    const dist = camera.position.distanceTo(controls.target);
     if (setCamDist) setCamDist(dist);
 
-    const camPos = computeCameraPosition(currentTarget.current, dist, currentDepth.current);
-    camera.position.copy(camPos);
-    camera.lookAt(currentTarget.current);
+    // Update continuous depth based on actual camera distance
+    if (!isAnimating.current) {
+      if (dist < 45) {
+        setDepth(0.0);
+      } else if (dist < 320) {
+        setDepth(1.0);
+      } else {
+        setDepth(2.0);
+      }
+    }
 
-    camera.fov = getFovForDepth(currentDepth.current);
-    camera.near = Math.max(0.1, dist / 200.0);
-    camera.far = dist * 50.0;
-    camera.updateProjectionMatrix();
+    // Project 3D building coordinates to screen coordinates for labels
+    if (onLabelsProject) {
+      const projected = {};
+      const w = gl.domElement.clientWidth;
+      const h = gl.domElement.clientHeight;
+
+      for (const node of cityLayout.nodes) {
+        const v = new THREE.Vector3(node.position[0], 14.0, node.position[2]);
+        v.project(camera);
+        // Only show if in front of camera
+        if (v.z < 1.0) {
+          const x = (v.x * 0.5 + 0.5) * w;
+          const y = (-(v.y * 0.5) + 0.5) * h;
+          projected[node.id] = { x, y, visible: x >= 20 && x <= w - 20 && y >= 20 && y <= h - 20 };
+        } else {
+          projected[node.id] = { visible: false };
+        }
+      }
+      onLabelsProject(projected);
+    }
   });
 
   return null;
 }
 
 /**
- * Drafting Grid Floor Mesh
+ * Drafting Grid Floor
  */
 function DraftingFloor() {
   const floorMesh = useMemo(() => {
@@ -74,45 +165,6 @@ function DraftingFloor() {
   }, []);
 
   return <primitive object={floorMesh} />;
-}
-
-/**
- * Debug 2D Top-Down Plan View overlay (?debug=plan)
- */
-function DebugPlanView({ layout, onClose }) {
-  return (
-    <div className="debug-plan-overlay" style={{
-      position: 'absolute', inset: 0, background: '#f4f6f1f5', zIndex: 100, padding: 20, overflow: 'auto'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h3>City Schematic Plan View (Debug: ?debug=plan)</h3>
-        <button className="button secondary" onClick={onClose}>Close Plan</button>
-      </div>
-      <svg viewBox="-350 -250 700 500" style={{ width: '100%', maxHeight: '80vh', border: '1px solid #c2ceb9', background: '#fafcf7' }}>
-        {layout.nodes.map(n => (
-          <polygon
-            key={n.id}
-            points={n.footprint.map(p => `${p[0]},${p[1]}`).join(' ')}
-            fill="#d5e7a6"
-            stroke="#203b30"
-            strokeWidth="1.5"
-            opacity="0.6"
-          />
-        ))}
-        {layout.nodes.map(n => (
-          <text key={`txt-${n.id}`} x={n.position[0]} y={n.position[2]} fontSize="11" textAnchor="middle" fill="#203b30" fontWeight="600">
-            {n.name}
-          </text>
-        ))}
-        {layout.edges.map(e => {
-          const p1 = NODE_POS_MAP[e.from];
-          const p2 = NODE_POS_MAP[e.to];
-          if (!p1 || !p2) return null;
-          return <line key={e.id} x1={p1.x} y1={p1.z} x2={p2.x} y2={p2.z} stroke="#2b7657" strokeWidth="1" strokeDasharray="4 4" />;
-        })}
-      </svg>
-    </div>
-  );
 }
 
 export default function GridWorld3D({
@@ -130,26 +182,10 @@ export default function GridWorld3D({
   const [depth, setDepth] = useState(selected ? 1.0 : 2.0);
   const [equipmentOpen, setEquipmentOpen] = useState(false);
   const [activeLens, setActiveLens] = useState('flows');
-  const [camDist, setCamDist] = useState(900);
+  const [camDist, setCamDist] = useState(850);
   const [tourActive, setTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
-  const [showDebugPlan, setShowDebugPlan] = useState(
-    typeof window !== 'undefined' && window.location.search.includes('debug=plan')
-  );
-
-  // Sync selection to depth
-  useEffect(() => {
-    if (selected) {
-      if (equipmentOpen) {
-        setDepth(0.0);
-      } else {
-        setDepth(1.0);
-      }
-    } else {
-      setDepth(2.0);
-      setEquipmentOpen(false);
-    }
-  }, [selected, equipmentOpen]);
+  const [labelCoords, setLabelCoords] = useState({});
 
   const level = Math.round(depth);
 
@@ -218,7 +254,6 @@ export default function GridWorld3D({
           setDepth(2.0);
         }
       } else if (e.key === '[') {
-        // Zoom out
         if (equipmentOpen) {
           setEquipmentOpen(false);
           setDepth(1.0);
@@ -227,24 +262,12 @@ export default function GridWorld3D({
           setDepth(2.0);
         }
       } else if (e.key === ']') {
-        // Zoom in
         if (!selected) {
           setSelected('ev');
           setDepth(1.0);
         } else if (!equipmentOpen) {
           setEquipmentOpen(true);
           setDepth(0.0);
-        }
-      } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        const nodes = cityLayout.nodes.map((n) => n.id);
-        const curr = nodes.indexOf(selected);
-        if (curr === -1) {
-          setSelected(nodes[0]);
-        } else {
-          const next = e.key === 'ArrowRight'
-            ? (curr + 1) % nodes.length
-            : (curr - 1 + nodes.length) % nodes.length;
-          setSelected(nodes[next]);
         }
       }
     };
@@ -253,38 +276,36 @@ export default function GridWorld3D({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [playing, selected, equipmentOpen, setPlaying, setSelected]);
 
-  // Wheel zoom handling
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const delta = e.deltaY * 0.0015;
-    setDepth((prev) => {
-      const next = Math.max(0.0, Math.min(2.0, prev + delta));
-      if (next >= 1.6 && selected) {
-        setSelected(null);
-        setEquipmentOpen(false);
-      }
-      return next;
-    });
+  // Calculate current power for any node
+  const getNodePower = (nodeId) => {
+    if (nodeId === 'solar') return flows.solar || 0;
+    if (nodeId === 'wind') return flows.wind || 0;
+    if (nodeId === 'utility') return flows.utility || 0;
+    if (nodeId === 'hub') return row?.[`demand_${optimized ? 'after' : 'before'}`] || 0;
+    return flows.load?.[nodeId] || 0;
   };
 
   return (
-    <div className="grid-3d-wrap" onWheel={handleWheel}>
-      {/* 3D Canvas */}
+    <div className="grid-3d-wrap">
+      {/* 3D Canvas with OrbitControls */}
       <Canvas
         className="grid-3d-canvas"
-        camera={{ position: [0, 900, 900], fov: 22 }}
+        camera={{ position: [0, 850, 850], fov: 24 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <CameraRig
+        <CameraAndControls
+          selected={selected}
           depth={depth}
-          targetNodeId={selected}
-          isEquipment={equipmentOpen}
+          setDepth={setDepth}
+          equipmentOpen={equipmentOpen}
+          setEquipmentOpen={setEquipmentOpen}
           setCamDist={setCamDist}
+          onLabelsProject={setLabelCoords}
         />
         <DraftingFloor />
 
-        {/* Level Scenes based on current Depth */}
-        {level === 2 && (
+        {/* Level Scenes based on continuous depth */}
+        {level >= 1 && (
           <CityScene
             run={run}
             row={row}
@@ -301,7 +322,7 @@ export default function GridWorld3D({
           />
         )}
 
-        {level === 1 && (
+        {level === 1 && selected && (
           <SiteScene
             run={run}
             row={row}
@@ -314,7 +335,7 @@ export default function GridWorld3D({
           />
         )}
 
-        {level === 0 && (
+        {level === 0 && selected && (
           <EquipmentScene
             selected={selected}
             run={run}
@@ -327,6 +348,38 @@ export default function GridWorld3D({
           />
         )}
       </Canvas>
+
+      {/* Floating 3D Building Pins & Labels */}
+      {camDist > 70 && (
+        <div className="floating-3d-pins-layer" aria-hidden="true">
+          {cityLayout.nodes.map((node) => {
+            const pos = labelCoords[node.id];
+            if (!pos || !pos.visible) return null;
+            const mw = getNodePower(node.id);
+            const isSelected = selected === node.id;
+
+            return (
+              <button
+                key={node.id}
+                className={`building-3d-pin ${isSelected ? 'selected' : ''}`}
+                style={{
+                  left: `${pos.x}px`,
+                  top: `${pos.y}px`,
+                  transform: 'translate(-50%, -100%)',
+                }}
+                onClick={() => {
+                  setSelected(node.id);
+                  setEquipmentOpen(false);
+                }}
+                title={`Inspect ${node.name}`}
+              >
+                <span className="pin-title">{node.name}</span>
+                <span className="pin-val">{fmt(mw)} MW</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Visually Hidden Accessible Node Buttons */}
       <div className="sr-only-nodes" aria-label="Microgrid nodes keyboard list">
@@ -342,6 +395,12 @@ export default function GridWorld3D({
             {n.name}
           </button>
         ))}
+      </div>
+
+      {/* Controls Hint Tag */}
+      <div className="controls-hint-badge">
+        <Compass size={13} />
+        <span>Drag to orbit · Right-click to pan · Scroll to zoom</span>
       </div>
 
       {/* HUD Overlays */}
@@ -366,8 +425,7 @@ export default function GridWorld3D({
       {/* Tour trigger button */}
       {!tourActive && (
         <button
-          className="button secondary"
-          style={{ position: 'absolute', top: 48, right: 14, zIndex: 10, fontSize: 10, padding: '4px 8px' }}
+          className="button secondary tour-btn"
           onClick={startTour}
           title="Start guided Shortage Tour"
         >
@@ -412,12 +470,6 @@ export default function GridWorld3D({
           onTogglePlay={() => setPlaying(!playing)}
         />
       )}
-
-      {/* Debug Plan View */}
-      {showDebugPlan && (
-        <DebugPlanView layout={cityLayout} onClose={() => setShowDebugPlan(false)} />
-      )}
     </div>
   );
 }
-

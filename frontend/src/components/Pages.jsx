@@ -13,14 +13,14 @@ function DispatchButton({optimized,onDispatch,busy}) {
 }
 function GridPanel(p) {
   const {row,run,optimized,selected,setSelected,playing,onNavigate,large=false}=p;
-  const initial3D = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const wideEnough = window.innerWidth >= 700;
-    return large && isWebGL2Available() && !reducedMotion && wideEnough;
-  }, [large]);
+  const webGLAvailable = useMemo(() => isWebGL2Available(), []);
+  const [viewMode, setViewMode] = useState(webGLAvailable ? '3d' : 'diagram');
 
-  const [viewMode, setViewMode] = useState(initial3D ? '3d' : 'diagram');
+  useEffect(() => {
+    if (webGLAvailable) {
+      setViewMode('3d');
+    }
+  }, [large, webGLAvailable]);
 
   return <Panel title={large?'Smart city simulation':'Live energy network'} action={<div className="panel-actions"><ViewSwitch viewMode={viewMode} onChangeView={setViewMode}/>{!large&&<button className="icon-button" aria-label="Expand grid simulation" onClick={()=>onNavigate('simulation')}><ArrowUpRight size={18}/></button>}</div>} className={`grid-panel ${large?'grid-large':''}`}>
     <div className="grid-map-wrap">
